@@ -18,41 +18,40 @@ public class ServerApp {
     static Connection conn;
     static List<Client> clients;
 
-    public static void main(String[] args) throws IOException, NoSuchAlgorithmException, SQLException {
+    public static void main(String[] args) throws NoSuchAlgorithmException, SQLException {
         MessageDigest md = MessageDigest.getInstance("MD5");
         Connection conn = DriverManager.getConnection("jdbc:sqlite:src/server/data.db");
         clients = new ArrayList<>();
-        ServerSocket server = new ServerSocket(5555);
+        try (ServerSocket server = new ServerSocket(5555)) {
 
-        while (true) {
+            while (true) {
 
-            Socket client = server.accept();
+                Socket client = server.accept();
 
-            // TODO: make server accept login check for several clients in the same time
+                // TODO: make server accept login check for several clients in the same time
 
-            DataInputStream dis = new DataInputStream(client.getInputStream());
-            DataOutputStream dos = new DataOutputStream(client.getOutputStream());
+                DataInputStream dis = new DataInputStream(client.getInputStream());
+                DataOutputStream dos = new DataOutputStream(client.getOutputStream());
 
-            String username = dis.readUTF();
-            String password = dis.readUTF();
+                String username = dis.readUTF();
+                String password = dis.readUTF();
 
-            md.update(password.getBytes());
-            password = init.App.byte2hex(md.digest());
+                md.update(password.getBytes());
+                password = init.App.byte2hex(md.digest());
 
-            if (checkLogin(username, password)) {
-                dos.writeUTF("success");
-                Client c = new Client(username, getFullName(username), client, dis, dos);
-                clients.add(c);
+                if (checkLogin(username, password)) {
+                    dos.writeUTF("success");
+                    Client c = new Client(username, getFullName(username), client, dis, dos);
+                    clients.add(c);
 
-                new Sender(c).start();
-                new Receiver(c, clients).start();
-            } else {
-                dos.writeUTF("fail");
+                    new Sender(c).start();
+                    new Receiver(c, clients).start();
+                } else {
+                    dos.writeUTF("fail");
+                }
             }
-
-
-
-            client.close();
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
         }
     }
 

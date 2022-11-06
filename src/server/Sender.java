@@ -1,9 +1,6 @@
 package server;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 
 public class Sender extends Thread {
 
@@ -24,7 +21,10 @@ public class Sender extends Thread {
                 if (msg.equals("bye")) {
                     break;
                 }
-            } catch (InterruptedException | IOException e) {}
+            } catch (InterruptedException | IOException e) {
+                
+                System.err.println(e.getMessage());
+            }
         }
         mySelf.closeSender();
         ServerApp.clients.remove(mySelf);

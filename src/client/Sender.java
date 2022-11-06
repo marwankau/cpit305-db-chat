@@ -30,12 +30,14 @@ public class Sender extends Thread {
             }
 
         } catch (IOException e) { 
-
+            System.err.println(e.getMessage());
         } finally {
             keyboard.close();
             try {
                 socket.shutdownOutput();
-            } catch (IOException e) { }
+            } catch (IOException e) {
+                System.err.println(e.getMessage());
+             }
         }
     }    
 }

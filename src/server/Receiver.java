@@ -25,12 +25,14 @@ public class Receiver extends Thread {
                 
                 for (Client client : clients) {
                     if (client != mySelf) {
-                        msg = mySelf.getFullname() + ": " + msg;
-                        client.queue.put(msg);
+                        client.queue.put(mySelf.getFullname() + ": " + msg);
                     }
                 }
                 
-            } catch (InterruptedException | IOException e) {}
+            } catch (InterruptedException | IOException e) {
+                
+                System.err.println(e.getMessage());
+            }
         }
         mySelf.closeReceiver();
     }

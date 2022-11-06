@@ -27,10 +27,14 @@ public class Receiver extends Thread {
 
         } catch (IOException e) { 
 
+            System.err.println(e.getMessage());
         } finally {
             try {
                 socket.shutdownInput();
-            } catch (IOException e) { }
+            } catch (IOException e) {
+                
+                System.err.println(e.getMessage());
+             }
         }
     }
     
