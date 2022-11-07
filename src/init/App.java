@@ -39,6 +39,17 @@ CREATE TABLE IF NOT EXISTS `clients` (
     ps.setString(2, md5_password);
     ps.setString(3, "Fahad Abdullah");
     ps.executeUpdate();
+
+
+    md.update("12345".getBytes());
+    md5_password = byte2hex(md.digest());
+
+     ps = conn.prepareStatement("INSERT INTO `clients` (`username`, `password`, `name`) VALUES (?, ?, ?);");
+    ps.setString(1, "Faisal");
+    ps.setString(2, md5_password);
+    ps.setString(3, "Faisal Almadafei");
+    ps.executeUpdate();
+
   }
 
   public static String byte2hex(byte[] digest) {
