@@ -57,11 +57,11 @@ public class ServerApp {
         }
     }
 
-    private static String getFullName(String username) throws SQLException {
+    static String getFullName(String username) throws SQLException {
         // TODO: get user's name from database using his username 
         String name ;
 
-        PreparedStatement pr = conn.prepareStatement("Select username from users where Username LIKE ?");
+        PreparedStatement pr = conn.prepareStatement("Select name from `clients` where username=?");
         ResultSet rs = pr.executeQuery();
 
         while(rs.next()){
@@ -70,16 +70,16 @@ public class ServerApp {
 
         }
         name = username;
-        
+
         return name;
 
 
         
     }
 
-    private static boolean checkLogin(String username, String password) throws SQLException {
+    static boolean checkLogin(String username, String password) throws SQLException {
         
-        PreparedStatement pr = conn.prepareStatement("Select * from SignUp where Username LIKE ? AND Passwordd LIKE ?");
+        PreparedStatement pr = conn.prepareStatement("Select * from clients where username LIKE ? AND password LIKE ?");
 
         pr.setString(1, username);
         pr.setString(2, password);
