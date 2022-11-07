@@ -18,10 +18,9 @@ public class ClientApp {
 
         System.out.print("username: ");
         String username = keyboard.nextLine();
-        
+
         System.out.print("password: ");
         String password = keyboard.nextLine();
-
 
         dos.writeUTF(username);
         dos.writeUTF(password);

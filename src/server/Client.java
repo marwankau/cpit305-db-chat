@@ -15,7 +15,6 @@ public class Client {
     DataInputStream dis;
     DataOutputStream dos;
 
-
     public Client(String username, String fullname, Socket socket, DataInputStream dis, DataOutputStream dos) {
         this.username = username;
         this.fullname = fullname;
@@ -30,7 +29,6 @@ public class Client {
     public String getUsername() {
         return username;
     }
-    
 
     public String getFullname() {
         return fullname;
@@ -39,13 +37,15 @@ public class Client {
     public void closeSender() {
         try {
             socket.shutdownOutput();
-        } catch (IOException e) { }
+        } catch (IOException e) {
+        }
     }
 
     public void closeReceiver() {
         try {
             socket.shutdownInput();
-        } catch (IOException e) { }
+        } catch (IOException e) {
+        }
     }
-    
+
 }
