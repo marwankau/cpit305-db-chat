@@ -7,9 +7,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +15,7 @@ public class ServerApp {
 
     static Connection conn;
     static List<Client> clients;
+
 
     public static void main(String[] args) throws NoSuchAlgorithmException, SQLException {
         MessageDigest md = MessageDigest.getInstance("MD5");
@@ -39,6 +38,9 @@ public class ServerApp {
                 md.update(password.getBytes());
                 password = init.App.byte2hex(md.digest());
 
+
+                Thread thread = new Thread();
+                thread.start();
                 if (checkLogin(username, password)) {
                     dos.writeUTF("success");
                     Client c = new Client(username, getFullName(username), client, dis, dos);
@@ -56,12 +58,30 @@ public class ServerApp {
     }
 
     private static String getFullName(String username) {
-        // TODO: get user's name from database using his username 
+
+        try {
+
+            Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery("SELECT * client WHERE username = "+username);
+
+            return rs.getString("fullName");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+
         return "Sample Name";
     }
 
-    private static boolean checkLogin(String username, String password) {
-        // TODO: check database for username and password
-        return true;
+    private static boolean checkLogin(String username, String password) throws SQLException  {
+
+        PreparedStatement pr = conn.prepareStatement("Select * from client where Username LIKE ? AND Password LIKE ?");
+
+        pr.setString(1, username);
+        pr.setString(2, password);
+        ResultSet rs = pr.executeQuery();
+
+        return rs.next();
     }
 }
