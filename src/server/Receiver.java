@@ -1,15 +1,23 @@
 package server;
 
 import java.io.IOException;
+import java.net.Socket;
 import java.util.List;
 
 public class Receiver extends Thread {
     private List<Client> clients;
     private Client mySelf;
+    private Socket socket;
 
     public Receiver(Client client, List<Client> clients) {
         this.mySelf = client;
         this.clients = clients;
+    }
+
+    public Receiver(Client c, List<Client> clients2, Socket client) {
+        this.mySelf=c;
+        this.clients = clients;
+        this.socket=client;
     }
 
     @Override
