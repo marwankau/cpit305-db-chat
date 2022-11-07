@@ -1,5 +1,6 @@
 package server;
 
+import java.beans.Statement;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -9,6 +10,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,13 +58,26 @@ public class ServerApp {
         }
     }
 
-    private static String getFullName(String username) {
-        // TODO: get user's name from database using his username 
-        return "Sample Name";
+    static String getFullName(String username) throws SQLException {
+        Statement stms =  (Statement) conn.prepareStatement("SELECT name FROM clients WHERE username = ?;");
+        ((PreparedStatement) stms).setString(1, username);
+        ResultSet result = ((PreparedStatement) stms).executeQuery();
+        return result.getString(username);
+
+        
+        
+
+        
+        
     }
 
-    private static boolean checkLogin(String username, String password) {
-        // TODO: check database for username and password
-        return true;
+    private static boolean checkLogin(String username, String password) throws SQLException {
+        PreparedStatement pstms = conn.prepareStatement("SELECT * FROM clients WHERE username = ? AND password = ?;");
+        pstms.setString(1, username);
+        pstms.setString(2, password);
+        ResultSet result = pstms.executeQuery();
+
+        return result.next();
+        
     }
 }
