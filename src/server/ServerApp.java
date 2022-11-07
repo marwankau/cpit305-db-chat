@@ -9,6 +9,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,13 +57,37 @@ public class ServerApp {
         }
     }
 
-    private static String getFullName(String username) {
+    private static String getFullName(String username) throws SQLException {
         // TODO: get user's name from database using his username 
-        return "Sample Name";
+        String name ;
+
+        PreparedStatement pr = conn.prepareStatement("Select username from users where Username LIKE ?");
+        ResultSet rs = pr.executeQuery();
+
+        while(rs.next()){
+
+            username = rs.getString(1);
+
+        }
+        name = username;
+        
+        return name;
+
+
+        
     }
 
-    private static boolean checkLogin(String username, String password) {
-        // TODO: check database for username and password
-        return true;
+    private static boolean checkLogin(String username, String password) throws SQLException {
+        
+        PreparedStatement pr = conn.prepareStatement("Select * from SignUp where Username LIKE ? AND Passwordd LIKE ?");
+
+        pr.setString(1, username);
+        pr.setString(2, password);
+        ResultSet rs = pr.executeQuery();
+
+        return rs.next();
     }
-}
+        
+    }
+
+
