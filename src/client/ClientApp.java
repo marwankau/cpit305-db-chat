@@ -27,9 +27,10 @@ public class ClientApp {
         dos.writeUTF(password);
 
         String res = dis.readUTF();
-
+     
         if (res.equals("success")) {
             // create two threads one for receiveing and one for sending
+           
             Sender sender = new Sender(dos, socket);
             Receiver receiver = new Receiver(dis, socket);
 
