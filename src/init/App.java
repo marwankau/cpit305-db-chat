@@ -13,14 +13,7 @@ public class App {
     Connection conn = DriverManager.getConnection("jdbc:sqlite:src/server/data.db");
     Statement stmt = conn.createStatement();
 
-    stmt.execute("""
-CREATE TABLE IF NOT EXISTS `clients` (
-  `username` varchar(10) NOT NULL,
-  `password` varchar(32) NOT NULL,
-  `name` varchar(100) DEFAULT NULL,
-  PRIMARY KEY (`username`)
-);
-    """);
+    stmt.execute("CREATE TABLE IF NOT EXISTS `clients` (`username` varchar(10) NOT NULL,`password` varchar(32) NOT NULL,`name` varchar(100) DEFAULT NULL, PRIMARY KEY (`username`));");
 
     md.update("123".getBytes());
     String md5_password = byte2hex(md.digest());
