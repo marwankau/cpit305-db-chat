@@ -8,10 +8,13 @@ import java.net.Socket;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class ServerApp {
 
@@ -27,8 +30,7 @@ public class ServerApp {
             while (true) {
 
                 Socket client = server.accept();
-
-                // TODO: make server accept login check for several clients in the same time
+                new thread(client).start();
 
                 DataInputStream dis = new DataInputStream(client.getInputStream());
                 DataOutputStream dos = new DataOutputStream(client.getOutputStream());
@@ -43,6 +45,10 @@ public class ServerApp {
                     dos.writeUTF("success");
                     Client c = new Client(username, getFullName(username), client, dis, dos);
                     clients.add(c);
+                    Sender sender = new Sender(c);
+                    sender.start();
+                    Receiver receiver = new Receiver(c, clients);
+                    receiver.start();
 
                     new Sender(c).start();
                     new Receiver(c, clients).start();
@@ -55,13 +61,35 @@ public class ServerApp {
         }
     }
 
-    private static String getFullName(String username) {
-        // TODO: get user's name from database using his username 
-        return "Sample Name";
+    public static String getFullName(String username) throws SQLException {
+        PreparedStatement ps = conn.prepareStatement("SELECT * FROM clients WHERE username LIKE ?;");
+        ps.setString(1, "%" + username + "%");
+        String fullname = "";
+        if (ps.execute()) {
+            ResultSet rs = ps.getResultSet();
+            while (rs.next()) {
+                fullname = rs.getString("name");
+
+            }
+        }
+        return fullname;
     }
 
-    private static boolean checkLogin(String username, String password) {
-        // TODO: check database for username and password
-        return true;
+    public static boolean checkLogin(String username, String password) throws SQLException {
+        String usernameRes = "";
+        String passRes = "";
+        PreparedStatement ps = conn.prepareStatement("SELECT * FROM clients WHERE username = ? AND password = ?;");
+        ps.setString(1, username);
+        ps.setString(2, password);
+        if (ps.execute()) {
+
+            ResultSet rs = ps.getResultSet();
+            while (rs.next()) {
+                usernameRes = rs.getString("username");
+                passRes = rs.getString("password");
+
+            }
+        }
+        return username.equalsIgnoreCase(usernameRes) && password.equalsIgnoreCase(passRes);
     }
 }
