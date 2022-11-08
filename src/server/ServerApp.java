@@ -1,7 +1,5 @@
 package server;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -20,7 +18,7 @@ public class ServerApp {
 
     public static void main(String[] args) throws NoSuchAlgorithmException, SQLException {
         MessageDigest md = MessageDigest.getInstance("MD5");
-        Connection conn = DriverManager.getConnection("jdbc:sqlite:src/server/data.db");
+        conn = DriverManager.getConnection("jdbc:sqlite:src/server/data.db");
         clients = new ArrayList<>();
         try (ServerSocket server = new ServerSocket(5555)) {
 
@@ -28,40 +26,13 @@ public class ServerApp {
 
                 Socket client = server.accept();
 
-                // TODO: make server accept login check for several clients in the same time
-
-                DataInputStream dis = new DataInputStream(client.getInputStream());
-                DataOutputStream dos = new DataOutputStream(client.getOutputStream());
-
-                String username = dis.readUTF();
-                String password = dis.readUTF();
-
-                md.update(password.getBytes());
-                password = init.App.byte2hex(md.digest());
-
-                if (checkLogin(username, password)) {
-                    dos.writeUTF("success");
-                    Client c = new Client(username, getFullName(username), client, dis, dos);
-                    clients.add(c);
-
-                    new Sender(c).start();
-                    new Receiver(c, clients).start();
-                } else {
-                    dos.writeUTF("fail");
+                LoginThred log = new LoginThred (md,conn,clients,client);
+                log.start();
+       
                 }
             }
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
-        }
-    }
-
-    private static String getFullName(String username) {
-        // TODO: get user's name from database using his username 
-        return "Sample Name";
-    }
-
-    private static boolean checkLogin(String username, String password) {
-        // TODO: check database for username and password
-        return true;
+             catch (IOException e) {
+                System.err.println(e.getMessage());
+             }
     }
 }
